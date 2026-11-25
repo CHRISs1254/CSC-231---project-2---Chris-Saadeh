@@ -35,9 +35,14 @@ public class PlayerMovement : MonoBehaviour
     private float dashCooldownTimer;    // counts down after a dash
     private float dashDirection;        // 1 = right, -1 = left
 
+    // ANIM state
+    private Animator anim;              // plays the animation clips
+    private string currentAnim;         // name of the clip playing right now
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();   // ANIM: grab the Animator on the player
         normalGravity = rb.gravityScale;
     }
 
@@ -72,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
             dashTimer -= Time.deltaTime;
             if (dashTimer <= 0f)
                 EndDash();
+            PlayAnim("run");   // ANIM: show run frames during the dash
             return; // no jumping or turning around in the middle of a dash
         }
 
@@ -105,6 +111,9 @@ public class PlayerMovement : MonoBehaviour
         // 7. Face the direction we're moving
         if (moveInput > 0 && !facingRight) Flip();
         if (moveInput < 0 && facingRight) Flip();
+
+        // ANIM 8. Pick the right animation for what we're doing
+        UpdateAnimation();
     }
 
     void FixedUpdate()
@@ -149,5 +158,33 @@ public class PlayerMovement : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+    }
+
+    // ANIM 9. Decide which clip fits what the player is doing
+    void UpdateAnimation()
+    {
+        if (!isGrounded)
+        {
+            if (rb.linearVelocity.y > 0f)
+                PlayAnim("jump");   // in the air, going up
+            else
+                PlayAnim("fall");   // in the air, coming down
+        }
+        else if (moveInput != 0f)
+        {
+            PlayAnim("run");        // on the ground, moving
+        }
+        else
+        {
+            PlayAnim("idle");       // on the ground, standing still
+        }
+    }
+
+    // ANIM 10. Switch clips, but only if it's a different one
+    void PlayAnim(string animName)
+    {
+        if (currentAnim == animName) return; // already playing: don't restart it every frame
+        anim.Play(animName);
+        currentAnim = animName;
     }
 }
