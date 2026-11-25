@@ -4,7 +4,7 @@ using TMPro;
 public class SoulCounter : MonoBehaviour
 {
     public static SoulCounter instance;   // lets any script reach the counter
-    public TMP_Text text;                 // the text on screen
+    public TMP_Text text;                 // the "Souls: x / y" text on screen
 
     private int souls;
     private int total;
@@ -16,7 +16,8 @@ public class SoulCounter : MonoBehaviour
 
     private void Start()
     {
-        total = FindObjectsByType<Collectible>(FindObjectsSortMode.None).Length;  // count orbs in the level
+        // count how many souls are placed in the level
+        total = FindObjectsByType<Collectible>(FindObjectsSortMode.None).Length;
         UpdateText();
     }
 

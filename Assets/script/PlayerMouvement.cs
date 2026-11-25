@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
-    public bool canMove = true;         // NEW: false while dead, so the player can't move
+    public bool canMove = true;         // false while dead, so the player can't move
 
     public float coyoteTime = 0.1f;
     public float jumpBufferTime = 0.1f;
@@ -19,6 +19,11 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 20f;       // how fast the dash goes
     public float dashDuration = 0.15f;  // how long the dash lasts (seconds)
     public float dashCooldown = 0.5f;   // wait time before you can dash again
+    public float dashSafeTime = 0.5f;   // extra immune time AFTER the dash ends, so you can escape the enemy
+
+    // PlayerHealth asks this before taking damage.
+    // True while dashing AND for a short time after, so dashing through an enemy is safe.
+    public bool IsDashing => isDashing || dashSafeTimer > 0f;
 
     private Rigidbody2D rb;
     private float moveInput;
@@ -35,10 +40,12 @@ public class PlayerMovement : MonoBehaviour
     private float dashTimer;            // counts down while dashing
     private float dashCooldownTimer;    // counts down after a dash
     private float dashDirection;        // 1 = right, -1 = left
+    private float dashSafeTimer;        // counts down the immune time after a dash
 
     // ANIM state
     private Animator anim;              // plays the animation clips
     private string currentAnim;         // name of the clip playing right now
+    private float hurtTimer;            // while above 0, keep showing the hurt pose
 
     void Start()
     {
@@ -49,7 +56,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (!canMove) return;           // NEW: dead = no input, no animation changes
+        if (!canMove) return;           // dead = no input, no animation changes
+
+        // DASH 0. Count down the after-dash immunity
+        if (dashSafeTimer > 0f)
+            dashSafeTimer -= Time.deltaTime;
 
         // 1. Read left/right keys
         moveInput = 0f;
@@ -84,8 +95,10 @@ public class PlayerMovement : MonoBehaviour
             return;            // no jumping or turning around in the middle of a dash
         }
 
-        // DASH D. Start a dash
-        if (Keyboard.current.leftShiftKey.wasPressedThisFrame && canDash && dashCooldownTimer <= 0f)
+        // DASH D. Start a dash with Q or Left Shift
+        bool dashPressed = Keyboard.current.qKey.wasPressedThisFrame
+                        || Keyboard.current.leftShiftKey.wasPressedThisFrame;
+        if (dashPressed && canDash && dashCooldownTimer <= 0f)
         {
             StartDash();
             return;
@@ -115,13 +128,16 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput > 0 && !facingRight) Flip();
         if (moveInput < 0 && facingRight) Flip();
 
-        // 8. Pick the right animation for what we're doing
-        UpdateAnimation();
+        // 8. Pick the animation, but keep the hurt pose for a moment after a hit
+        if (hurtTimer > 0f)
+            hurtTimer -= Time.deltaTime;
+        else
+            UpdateAnimation();
     }
 
     void FixedUpdate()
     {
-        if (!canMove) return;           // NEW: dead = no movement
+        if (!canMove) return;           // dead = no movement
 
         // DASH E. During a dash: straight line, no gravity, ignore normal movement
         if (isDashing)
@@ -149,19 +165,28 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = 0f;
     }
 
-    // DASH G. Finish the dash
+    // DASH G. Finish the dash, then stay immune a little longer to get away from the enemy
     void EndDash()
     {
         isDashing = false;
+        dashSafeTimer = dashSafeTime;
         rb.gravityScale = normalGravity;
         rb.linearVelocity = new Vector2(dashDirection * moveSpeed, 0f); // drop back to normal speed
     }
 
-    // NEW: cancel a dash instantly (used by PlayerHealth when the player dies)
+    // Cancel a dash instantly (used by PlayerHealth when the player dies)
     public void StopDash()
     {
         isDashing = false;
+        dashSafeTimer = 0f;             // no leftover immunity after dying
         rb.gravityScale = normalGravity;
+    }
+
+    // Show the hurt animation for a short time (called by PlayerHealth)
+    public void PlayHurt(float time)
+    {
+        hurtTimer = time;
+        PlayAnim("hurt");
     }
 
     void Flip()
@@ -193,7 +218,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // 10. Switch clips, but only if it's a different one
-    // NEW: now public, so PlayerHealth can play "death" and "idle"
     public void PlayAnim(string animName)
     {
         if (currentAnim == animName) return; // already playing: don't restart it every frame
