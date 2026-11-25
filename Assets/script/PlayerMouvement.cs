@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
+    public bool canMove = true;         // NEW: false while dead, so the player can't move
 
     public float coyoteTime = 0.1f;
     public float jumpBufferTime = 0.1f;
@@ -42,12 +43,14 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();   // ANIM: grab the Animator on the player
+        anim = GetComponent<Animator>();
         normalGravity = rb.gravityScale;
     }
 
     void Update()
     {
+        if (!canMove) return;           // NEW: dead = no input, no animation changes
+
         // 1. Read left/right keys
         moveInput = 0f;
         if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
@@ -77,8 +80,8 @@ public class PlayerMovement : MonoBehaviour
             dashTimer -= Time.deltaTime;
             if (dashTimer <= 0f)
                 EndDash();
-            PlayAnim("run");   // ANIM: show run frames during the dash
-            return; // no jumping or turning around in the middle of a dash
+            PlayAnim("run");   // show run frames during the dash
+            return;            // no jumping or turning around in the middle of a dash
         }
 
         // DASH D. Start a dash
@@ -112,12 +115,14 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput > 0 && !facingRight) Flip();
         if (moveInput < 0 && facingRight) Flip();
 
-        // ANIM 8. Pick the right animation for what we're doing
+        // 8. Pick the right animation for what we're doing
         UpdateAnimation();
     }
 
     void FixedUpdate()
     {
+        if (!canMove) return;           // NEW: dead = no movement
+
         // DASH E. During a dash: straight line, no gravity, ignore normal movement
         if (isDashing)
         {
@@ -152,6 +157,13 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = new Vector2(dashDirection * moveSpeed, 0f); // drop back to normal speed
     }
 
+    // NEW: cancel a dash instantly (used by PlayerHealth when the player dies)
+    public void StopDash()
+    {
+        isDashing = false;
+        rb.gravityScale = normalGravity;
+    }
+
     void Flip()
     {
         facingRight = !facingRight;
@@ -160,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = scale;
     }
 
-    // ANIM 9. Decide which clip fits what the player is doing
+    // 9. Decide which clip fits what the player is doing
     void UpdateAnimation()
     {
         if (!isGrounded)
@@ -180,8 +192,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // ANIM 10. Switch clips, but only if it's a different one
-    void PlayAnim(string animName)
+    // 10. Switch clips, but only if it's a different one
+    // NEW: now public, so PlayerHealth can play "death" and "idle"
+    public void PlayAnim(string animName)
     {
         if (currentAnim == animName) return; // already playing: don't restart it every frame
         anim.Play(animName);
