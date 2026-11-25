@@ -295,7 +295,11 @@ MonoBehaviour:
   groundCheckRadius: 0.2
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
+  coyoteTime: 0.1
+  jumpBufferTime: 0.1
+  jumpCutMultiplier: 0.5
+  fallMultiplier: 1.6
 --- !u!70 &307871501
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
