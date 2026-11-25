@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private float moveInput;
     private bool isGrounded;
+    private bool wasGrounded;           // was the player on the ground last frame? (for the land sound)
     private bool facingRight = true;
 
     private float coyoteCounter;
@@ -45,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     // ANIM state
     private Animator anim;              // plays the animation clips
     private string currentAnim;         // name of the clip playing right now
-    private float hurtTimer;            // while above 0, keep showing the hurt pose
+    private float lockedAnimTimer;      // while above 0, keep the hurt/attack animation playing
 
     void Start()
     {
@@ -70,7 +71,12 @@ public class PlayerMovement : MonoBehaviour
             moveInput = 1f;
 
         // 2. Ground check
+        wasGrounded = isGrounded;
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        // SOUND: just touched the ground this frame = landing
+        if (isGrounded && !wasGrounded && AudioManager.instance != null)
+            AudioManager.instance.PlayLand();
 
         // 3. Coyote timer
         if (isGrounded)
@@ -116,6 +122,9 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpBufferCounter = 0f;
             coyoteCounter = 0f;
+
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlayJump();   // SOUND: jump
         }
 
         // 6. Variable jump height
@@ -128,9 +137,9 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput > 0 && !facingRight) Flip();
         if (moveInput < 0 && facingRight) Flip();
 
-        // 8. Pick the animation, but keep the hurt pose for a moment after a hit
-        if (hurtTimer > 0f)
-            hurtTimer -= Time.deltaTime;
+        // 8. Pick the animation, but let a hurt/attack animation finish first
+        if (lockedAnimTimer > 0f)
+            lockedAnimTimer -= Time.deltaTime;
         else
             UpdateAnimation();
     }
@@ -185,8 +194,15 @@ public class PlayerMovement : MonoBehaviour
     // Show the hurt animation for a short time (called by PlayerHealth)
     public void PlayHurt(float time)
     {
-        hurtTimer = time;
-        PlayAnim("hurt");
+        PlayLockedAnim("hurt", time);
+    }
+
+    // Play an animation from its first frame and keep it for 'time' seconds (hurt, attack)
+    public void PlayLockedAnim(string animName, float time)
+    {
+        lockedAnimTimer = time;
+        anim.Play(animName, 0, 0f);     // restart from frame 1, even if it was already playing
+        currentAnim = animName;
     }
 
     void Flip()

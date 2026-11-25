@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
     public float respawnDelay = 1f;     // seconds before coming back
     public float hurtBounce = 6f;       // small hop up when hit
 
-    public int Health => health;        // the HUD can read these later
+    public int Health => health;        // the HUD reads these
     public int Lives => lives;
 
     private int health;
@@ -52,6 +52,9 @@ public class PlayerHealth : MonoBehaviour
         if (invincibleTimer > 0f) return;   // still immune
         if (movement.IsDashing) return;     // dashing phases through enemies
 
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayHurt();   // SOUND: hurt
+
         health--;
         if (health <= 0)
         {
@@ -59,7 +62,7 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        invincibleTimer = invincibleTime;                                   // 3 seconds of immunity
+        invincibleTimer = invincibleTime;                                   // immunity after a hit
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, hurtBounce);   // little hop
         movement.PlayHurt(0.3f);                                            // hurt pose
     }
@@ -71,6 +74,9 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         lives--;
 
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayHurt();   // SOUND: death (same hurt sound)
+
         invincibleTimer = 0f;
         sr.enabled = true;
         movement.StopDash();
@@ -80,9 +86,9 @@ public class PlayerHealth : MonoBehaviour
         movement.PlayAnim("death");
 
         if (lives > 0)
-            Invoke(nameof(Respawn), respawnDelay);
+            Invoke(nameof(Respawn), respawnDelay);       // come back at the last checkpoint
         else
-            Debug.Log("GAME OVER");        // game over screen comes later
+            Invoke(nameof(ShowGameOver), respawnDelay);  // let the death animation play, then Game Over
     }
 
     private void Respawn()
@@ -95,5 +101,11 @@ public class PlayerHealth : MonoBehaviour
         movement.canMove = true;
         movement.PlayAnim("idle");
         isDead = false;
+    }
+
+    // Out of lives: tell the GameManager to show the Game Over screen
+    private void ShowGameOver()
+    {
+        GameManager.instance.GameOver();
     }
 }

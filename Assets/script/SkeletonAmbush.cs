@@ -61,6 +61,10 @@ public class SkeletonAmbush : MonoBehaviour
         awake = true;
         sr.enabled = true;                       // appear
         anim.Play(riseAnim, 0, 0f);              // play the rise from the first frame
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayRise();    // SOUND: skeleton rises from the ground
+
         Invoke(nameof(StartWalking), riseTime);  // start walking when the rise ends
     }
 

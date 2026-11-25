@@ -64,6 +64,9 @@ public class GhostChase : MonoBehaviour
                     state = State.Attack;
                     timer = attackTime;
                     col.enabled = true;     // now it can kill
+
+                    if (AudioManager.instance != null)
+                        AudioManager.instance.PlayGhostAttack();   // SOUND: ghostly swoop
                 }
                 break;
 
