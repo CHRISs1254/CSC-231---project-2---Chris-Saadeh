@@ -25,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     // True while dashing AND for a short time after, so dashing through an enemy is safe.
     public bool IsDashing => isDashing || dashSafeTimer > 0f;
 
+    // True only during the dash itself (DashTrail uses it to draw the afterimages)
+    public bool DashActive => isDashing;
+
     private Rigidbody2D rb;
     private float moveInput;
     private bool isGrounded;
