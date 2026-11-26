@@ -1,23 +1,10 @@
-# [GAME TITLE]
+                                             SoulBound
 
 CSC 231 Project 2: Platformer MVP (Level 1), by Chris Saadeh
 
-## Character pitch
+**Name:** Jack Vane.
 
-**Name:** [CHARACTER NAME]
-
-**Look:** [One line: what they look like, e.g. hooded swordsman in dark armor.]
-
-**Backstory:** [2-3 sentences, in your own words. Who are they, why are they in the graveyard,
-and why are they collecting souls?]
-
-**Signature move:** Dash. A fast burst forward that passes through enemies without getting hurt.
-
-## The level
-
-[GAME TITLE] is a 2D platformer set in a haunted graveyard. Collect the souls, get past the ghosts
-and rising skeletons, and reach [THE GOAL, e.g. the statue] at the end to finish the level.
-A checkpoint saves your progress, and falling into a pit costs a life.
+**Backstory:** is bound to the graveyard by a curse. Every soul he frees weakens it, and the portal at the end is his way out.
 
 ## Controls
 
@@ -30,26 +17,35 @@ A checkpoint saves your progress, and falling into a pit costs a life.
 | Pause | Esc |
 | Mute / unmute | M |
 
-## Build and video
-
-- Windows build: [LINK OR "CSC231_Project2_ChrisSaadeh_Build.zip"]
-- Gameplay video: [LINK]
-
 ## Tools & Credits
 
-**Engine:** Unity 6, 2D URP
+### Who made what
+- **Game design, level design, character, story and all ideas:** Chris Saadeh.
+  Every creative decision in the game is mine.
+- **Code and UI support:** Claude, which helped me write and fix the C# scripts
+  (player movement, enemies, health, menus, parallax, dash trail, ash effect) and build the
+  editor tools that set up and style the UI. I directed all of it and can explain the code.
 
-**AI tools used:**
-- Claude (Anthropic): [say what you used it for, e.g. help writing and fixing C# scripts,
-  and the editor tool that builds the menus]
-- [Any other AI tool, or remove this line]
+**Engine:** Unity 6 (6000.3), 2D URP
 
-The character, the level design and the game decisions are my own.
+### Art
+- **Gothicvania Cemetery** by Luis Zuno (Ansimuz): hero, ghost and skeleton sprites,
+  graveyard tileset, sky and graveyard backgrounds, props.
+  https://ansimuz.itch.io/gothicvania-cemetery | License: CC0 (public domain, no credit required)
+- **Dark Ages UI** by Hypnobius: menu frames, buttons and health bar.
+  https://hypnobius.itch.io/dark-ages-ui | License: free for personal and commercial use, credit optional
+- **Pixel Art Animated Portal** by Frostwindz: the end-of-level portal.
+  https://frostwindz.itch.io/pixel-art-fantasy-animated-portal | License: free for personal and commercial use, no redistribution
+- **Soul sprite:** NoobGodoter's spritesheet. [SOURCE LINK + LICENSE]
 
-**Art:**
-- Hero, ghost, skeleton and graveyard environment: [PACK NAME] by [AUTHOR], [LINK], license: [LICENSE]
-- Soul sprite (NoobGodoter's spritesheet): [AUTHOR], [LINK], license: [LICENSE]
+### Font
+- **Gothic Pixel Font** by leonardocosta (made with FontStruct).
+  https://fontstruct.com/fontstructions/show/1344429 | License: CC BY 3.0 (credit required)
+- **Liberation Sans** (TextMeshPro default font, used for the controls list and numbers) | License: SIL Open Font License
 
-**Sound and music:**
-- Sound effects (jump, attack, collect, hurt, kill, rise, win, ghost attack): [SOURCE], [LINK], license: [LICENSE]
-- Music "sci_fi_platformer04_main_loop": [AUTHOR], [LINK], license: [LICENSE]
+### Sound and music
+- **Sound effects:** jump, landing, sword attack, hurt, enemy kill and skeleton rise come from the
+  Gothicvania Cemetery pack by Ansimuz (CC0).
+- **Music:** "sci_fi_platformer04_main_loop", included in the Gothicvania Cemetery pack (CC0 per the pack license).
+- **Sound effects made with AI:** soul collect, ghost attack and level-complete sounds were
+  generated with code by Claude for this game.
