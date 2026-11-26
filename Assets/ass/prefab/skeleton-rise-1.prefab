@@ -242,5 +242,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33f9b6bd4a3974408e17474c5fb608f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  hits: 1
+  hits: 2
   flashTime: 0.1
