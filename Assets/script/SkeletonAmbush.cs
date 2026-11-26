@@ -7,8 +7,7 @@ public class SkeletonAmbush : MonoBehaviour
     public float speed = 2f;          // walking speed
     public float chaseHeight = 1.5f;  // only chases if the player is about on the same floor (up/down distance)
     public float chaseRange = 8f;     // only chases if the player is this close (left/right distance)
-    public LayerMask groundLayer;     // what counts as ground
-    public Transform edgeCheck;       // empty child in front of the feet, a little below the ground line
+    public Transform edgeCheck;       // empty child in front of the feet
     public string riseAnim = "skelo rise no cloth";   // clip names, must match exactly
     public string walkAnim = "skelo no cloth walk";
 
@@ -67,7 +66,7 @@ public class SkeletonAmbush : MonoBehaviour
         Face(dir);
 
         // 5. No ground in front?
-        if (!Physics2D.OverlapCircle(edgeCheck.position, 0.1f, groundLayer))
+        if (!GroundAhead())
         {
             if (!chasing && turnTimer <= 0f)
             {
@@ -81,6 +80,31 @@ public class SkeletonAmbush : MonoBehaviour
         // 6. Walk
         anim.speed = 1f;                  // legs move
         transform.position += new Vector3(dir * speed * Time.deltaTime, 0f, 0f);
+    }
+
+    // Is there floor in front of the feet?
+    // Shoots an invisible line straight down from a bit above the edgeCheck to a bit below it,
+    // so it still works if the skeleton is placed a little too high or too low.
+    // Any solid collider counts as floor (not triggers like enemies or the death zone, and not the player).
+    private bool GroundAhead()
+    {
+        Vector2 start = (Vector2)edgeCheck.position + Vector2.up * 0.5f;
+        foreach (RaycastHit2D hit in Physics2D.RaycastAll(start, Vector2.down, 1.5f))
+        {
+            if (hit.collider.isTrigger) continue;
+            if (hit.collider.GetComponentInParent<PlayerHealth>() != null) continue;
+            return true;
+        }
+        return false;
+    }
+
+    // Draws that line in the Scene view when the skeleton is selected (yellow), so you can see it
+    private void OnDrawGizmosSelected()
+    {
+        if (edgeCheck == null) return;
+        Vector3 start = edgeCheck.position + Vector3.up * 0.5f;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(start, start + Vector3.down * 1.5f);
     }
 
     // Standing still: freeze the walk animation so it doesn't walk in place
