@@ -51,9 +51,9 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // HUD: keep lives and health up to date
+        // HUD: keep lives up to date (health is shown by the HealthBar at the top)
         if (livesText != null)
-            livesText.text = "Lives: " + player.Lives + "   HP: " + player.Health;
+            livesText.text = "Lives: " + player.Lives;
 
         // Esc opens/closes the pause menu, only while playing
         if (Keyboard.current.escapeKey.wasPressedThisFrame && playing)

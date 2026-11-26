@@ -62,7 +62,7 @@ public static class MenuBuilder
 
         // Lives text (under the souls)
         TMP_Text lives = FindText("LivesText");
-        if (lives == null) lives = NewText("LivesText", hud, "Lives: 3   HP: 3", 40);
+        if (lives == null) lives = NewText("LivesText", hud, "Lives: 3", 40);
         else Undo.SetTransformParent(lives.transform, hud, "Build Menus");
         Undo.RecordObject(lives.rectTransform, "Build Menus");
         Place(lives.rectTransform, new Vector2(0, 1), new Vector2(40, -90), new Vector2(500, 60));
