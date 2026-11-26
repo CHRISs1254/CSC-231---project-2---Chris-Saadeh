@@ -29,6 +29,13 @@ public class SoulCounter : MonoBehaviour
 
     private void UpdateText()
     {
-        text.text = "Souls: " + souls + " / " + total;
+        text.text = "Souls: " + Number(souls) + " / " + Number(total);
+    }
+
+    // The gothic font has no numbers (its "0" is even blank), so numbers are written in the normal font.
+    // <font="..."> is a TextMeshPro tag that switches font for the text inside it.
+    public static string Number(int n)
+    {
+        return "<font=\"LiberationSans SDF\">" + n + "</font>";
     }
 }

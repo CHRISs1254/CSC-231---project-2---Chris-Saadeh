@@ -14,10 +14,11 @@ public class GameManager : MonoBehaviour
     public GameObject pausePanel;
     public GameObject gameOverPanel;
     public GameObject winPanel;
-    public GameObject hud;                   // the in-game text (souls, lives)
+    public GameObject controlsPanel;         // "How to Play" screen, shown after pressing Play
+    public GameObject hud;                   // the in-game UI (health bar, lives, souls, objective)
 
     [Header("HUD")]
-    public TMP_Text livesText;               // shows "Lives: 3   HP: 3"
+    public TMP_Text livesText;               // shows "Lives: 3"
 
     public PlayerHealth player;              // drag the Player here
 
@@ -45,7 +46,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            StartGame();                     // came from Restart: jump straight in
+            BeginPlaying();                  // came from Restart: skip the title and the controls
         }
     }
 
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
     {
         // HUD: keep lives up to date (health is shown by the HealthBar at the top)
         if (livesText != null)
-            livesText.text = "Lives: " + player.Lives;
+            livesText.text = "Lives: " + SoulCounter.Number(player.Lives);   // number in the normal font (see SoulCounter)
 
         // Esc opens/closes the pause menu, only while playing
         if (Keyboard.current.escapeKey.wasPressedThisFrame && playing)
@@ -61,14 +62,32 @@ public class GameManager : MonoBehaviour
             if (paused) Resume();
             else Pause();
         }
+
+        // On the controls screen, Enter works like the Start button
+        if (controlsPanel != null && controlsPanel.activeSelf
+            && (Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame))
+            BeginPlaying();
     }
 
     // ---------- Buttons call these (Button > On Click) ----------
 
+    // Title screen > Play: show the controls first (the game stays frozen behind them)
     public void StartGame()
     {
+        if (controlsPanel == null)
+        {
+            BeginPlaying();                  // no controls screen made yet: just play
+            return;
+        }
         HideAll();
-        hud.SetActive(true);
+        controlsPanel.SetActive(true);
+    }
+
+    // Controls screen > Start (or Enter): the game really starts
+    public void BeginPlaying()
+    {
+        HideAll();
+        hud.SetActive(true);                 // health bar, lives, souls and the objective
         playing = true;
         Freeze(false);
     }
@@ -136,6 +155,7 @@ public class GameManager : MonoBehaviour
         pausePanel.SetActive(false);
         gameOverPanel.SetActive(false);
         winPanel.SetActive(false);
+        if (controlsPanel != null) controlsPanel.SetActive(false);
         hud.SetActive(false);
     }
 
