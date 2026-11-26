@@ -4012,7 +4012,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Game Title
+  m_text: Soulbound
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 78d1881f9c31b51409335ab992d9f846, type: 2}
   m_sharedMaterial: {fileID: 8860362839171272908, guid: 78d1881f9c31b51409335ab992d9f846, type: 2}

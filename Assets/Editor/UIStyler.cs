@@ -21,7 +21,7 @@ using TMPro;
 // Running it again is safe: it deletes what it made last time and makes it again.
 public static class UIStyler
 {
-    const string GameTitle = "Game Title";    // change this to your game's name, then run Style UI again
+    const string GameTitle = "Soulbound";    // change this to your game's name, then run Style UI again
 
     const string SheetPath = "Assets/ass/32x32-Tilesheet.png";
     const string FontPath = "Assets/ass/gothic-pixel-font.ttf";
