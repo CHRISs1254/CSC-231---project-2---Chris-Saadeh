@@ -3893,7 +3893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4093d249441402746bd12be9dd12e1cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hazard
-  instantKill: 0
+  instantKill: 1
 --- !u!61 &911416359
 BoxCollider2D:
   m_ObjectHideFlags: 0
